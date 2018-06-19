@@ -2,20 +2,19 @@
 # @Author: Shubham Bansal
 # @Date:   2018-06-18 20:43:01
 # @Last Modified by:   Shubham Bansal
-# @Last Modified time: 2018-06-19 08:55:34
-module  ExceptionHandler
-  # provides the more graceful `included` method
+# @Last Modified time: 2018-06-19 09:52:33
+module ExceptionHandler
   extend ActiveSupport::Concern
 
-  # Define custom error subclasses - rescue catched  `StandardErrors`
-  class AuthenticationError < StandardError;  end
-  class MissingToken  < StandardError;  end
-  class InvalidToken  < StandardError;  end
+  # Define custom error subclasses - rescue catches `StandardErrors`
+  class AuthenticationError < StandardError; end
+  class MissingToken < StandardError; end
+  class InvalidToken < StandardError; end
 
-  included  do
+  included do
     # Define custom handlers
-    rescue_from ActiveRecord::RecordInvalid,  with: :four_twenty_two
-    rescue_from ExceptionHandler::AuthenticationError,  with: :unauthorized_request
+    rescue_from ActiveRecord::RecordInvalid, with: :four_twenty_two
+    rescue_from ExceptionHandler::AuthenticationError, with: :unauthorized_request
     rescue_from ExceptionHandler::MissingToken, with: :four_twenty_two
     rescue_from ExceptionHandler::InvalidToken, with: :four_twenty_two
 
@@ -28,7 +27,7 @@ module  ExceptionHandler
 
   # JSON response with message; Status code 422 - unprocessable entity
   def four_twenty_two(e)
-    json_response({ message: e.message  },  :unprocessable_entity)
+    json_response({ message: e.message }, :unprocessable_entity)
   end
 
   # JSON response with message; Status code 401 - Unauthorized
