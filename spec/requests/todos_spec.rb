@@ -1,25 +1,18 @@
-#!/usr/bin/ruby
-# @Author: Shubham Bansal
-# @Date:   2018-06-18 20:04:57
-# @Last Modified by:   Shubham Bansal
-# @Last Modified time: 2018-06-19 10:12:59
 require 'rails_helper'
 
 RSpec.describe 'Todos API', type: :request do
-  # initialize test data
+  # add todos owner
   let(:user) { create(:user) }
   let!(:todos) { create_list(:todo, 10, created_by: user.id) }
   let(:todo_id) { todos.first.id }
   # authorize request
   let(:headers) { valid_headers }
 
-  # Test suite for GET /todos
   describe 'GET /todos' do
-    # make HTTP get request before each example
+    # update request with headers
     before { get '/todos', params: {}, headers: headers }
 
     it 'returns todos' do
-      # Note `json` is a custom helper to parse JSON responses
       expect(json).not_to be_empty
       expect(json.size).to eq(10)
     end
@@ -29,7 +22,6 @@ RSpec.describe 'Todos API', type: :request do
     end
   end
 
-  # Test suite for GET /todos/:id
   describe 'GET /todos/:id' do
     before { get "/todos/#{todo_id}", params: {}, headers: headers }
 
@@ -57,15 +49,13 @@ RSpec.describe 'Todos API', type: :request do
     end
   end
 
-  # Test suite for POST /todos
   describe 'POST /todos' do
-    # valid payload
-    let(:valid_attributes) do
+     let(:valid_attributes) do
       # send json payload
       { title: 'Learn Elm', created_by: user.id.to_s }.to_json
     end
 
-    context 'when the request is valid' do
+    context 'when request is valid' do
       before { post '/todos', params: valid_attributes, headers: headers }
 
       it 'creates a todo' do
@@ -86,13 +76,12 @@ RSpec.describe 'Todos API', type: :request do
       end
 
       it 'returns a validation failure message' do
-        expect(response.body)
-          .to match(/Validation failed: Created by can't be blank/)
+        expect(json['message'])
+          .to match(/Validation failed: Title can't be blank/)
       end
     end
   end
 
-  # Test suite for PUT /todos/:id
   describe 'PUT /todos/:id' do
     let(:valid_attributes) { { title: 'Shopping' }.to_json }
 
@@ -109,7 +98,6 @@ RSpec.describe 'Todos API', type: :request do
     end
   end
 
-  # Test suite for DELETE /todos/:id
   describe 'DELETE /todos/:id' do
     before { delete "/todos/#{todo_id}", params: {}, headers: headers }
 
